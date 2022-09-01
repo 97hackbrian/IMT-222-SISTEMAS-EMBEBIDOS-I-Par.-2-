@@ -32,6 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+int bot=1;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -47,6 +48,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -83,6 +85,7 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -93,7 +96,73 @@ int main(void)
   {
     /* USER CODE END WHILE */
 
+
+
+
+	  if((HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_7))==1){
+		  		  while (1){
+		  			  if((HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_7))==0){
+		  				  bot=bot+1;
+		  				  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 1);
+		  				HAL_Delay(300);
+		  				  break;
+		  			  }
+		  		  }
+		  	  }
+	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
+/*
+
+		  if((HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0))==1){
+			  bot=bot+1;
+		  }
+*/
+
+		  	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, 1);
+		  	  HAL_Delay(1000-(bot*100));
+		  	if((HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0))==1){
+		  				  bot=bot+1;
+		  			  }
+
+		  	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, 0);
+		  	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
+		  	  HAL_Delay(1000-(bot*100));
+		  	if((HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0))==1){
+		  				  bot=bot+1;
+		  			  }
+
+		  	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
+		  	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 1);
+		  	  HAL_Delay(1000-(bot*100));
+		  	if((HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0))==1){
+		  				  bot=bot+1;
+		  			  }
+
+		  	 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 0);
+		  	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, 1);
+		  	  HAL_Delay(1000-(bot*100));
+		  	if((HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0))==1){
+		  				  bot=bot+1;
+		  			  }
+
+		  	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, 0);
+
+
+		  	  if(bot>=10){
+		  		  bot=1;
+		  	  }
+
+
+
+
+
+
+
+
+
+
+
     /* USER CODE BEGIN 3 */
+
   }
   /* USER CODE END 3 */
 }
@@ -138,6 +207,53 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_6, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8|GPIO_PIN_11, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : PB0 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PB1 PB4 PB6 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_6;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PA8 PA11 */
+  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_11;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PB7 */
+  GPIO_InitStruct.Pin = GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
 }
 
 /* USER CODE BEGIN 4 */
