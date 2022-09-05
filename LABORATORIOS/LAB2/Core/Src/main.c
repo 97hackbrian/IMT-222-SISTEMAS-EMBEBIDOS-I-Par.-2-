@@ -95,10 +95,6 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
-
-
-
 	  if((HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_7))==1){
 		  		  while (1){
 		  			  if((HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_7))==0){
@@ -110,62 +106,30 @@ int main(void)
 		  		  }
 		  	  }
 	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
-/*
+	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, 1);
+	  HAL_Delay(1000-(bot*100));
 
-		  if((HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0))==1){
-			  bot=bot+1;
-		  }
-*/
+	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, 0);
+	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
+	  HAL_Delay(1000-(bot*100));
 
-		  	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, 1);
-		  	  HAL_Delay(1000-(bot*100));
-		  	if((HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0))==1){
-		  				  bot=bot+1;
-		  			  }
+	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 1);
+	  HAL_Delay(1000-(bot*100));
 
-		  	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, 0);
-		  	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
-		  	  HAL_Delay(1000-(bot*100));
-		  	if((HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0))==1){
-		  				  bot=bot+1;
-		  			  }
-
-		  	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
-		  	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 1);
-		  	  HAL_Delay(1000-(bot*100));
-		  	if((HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0))==1){
-		  				  bot=bot+1;
-		  			  }
-
-		  	 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 0);
-		  	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, 1);
-		  	  HAL_Delay(1000-(bot*100));
-		  	if((HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0))==1){
-		  				  bot=bot+1;
-		  			  }
-
-		  	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, 0);
-
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 0);
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, 1);
+	  HAL_Delay(1000-(bot*100));
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, 0);
 
 		  	  if(bot>=10){
 		  		  bot=1;
 		  	  }
-
-
-
-
-
-
-
-
-
-
-
     /* USER CODE BEGIN 3 */
-
   }
   /* USER CODE END 3 */
 }
+
 
 /**
   * @brief System Clock Configuration
