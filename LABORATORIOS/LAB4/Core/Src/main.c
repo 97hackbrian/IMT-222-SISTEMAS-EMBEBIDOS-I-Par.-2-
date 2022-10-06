@@ -43,6 +43,9 @@
 ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
 unsigned readValue;
+
+TIM_HandleTypeDef htim2;
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -52,6 +55,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -91,6 +95,7 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_ADC1_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -98,80 +103,68 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+
   while (1)
   {
     /* USER CODE END WHILE */
-	  	  HAL_ADC_Start(&hadc1);
-	  	  //HAL_ADC_PollForConversion(&hadc1,1000);
-	 	  readValue=HAL_ADC_GetValue(&hadc1);
 
-	 	  if(readValue>200){
-	 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_5,1);
-	 	  }
-	 	  else{
-	 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_5,0);
-	 	  }
+	  HAL_ADC_Start(&hadc1);
+	  	  	  //HAL_ADC_PollForConversion(&hadc1,1000);
+	  	 	  readValue=HAL_ADC_GetValue(&hadc1);
+	  	 	  if(readValue>200){
+	  	 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_5,1);
+	  	 	  }
+	  	 	  else{
+	  	 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_5,0);
+	  	 	  }
+	  	 	 if(readValue>470){
+	  	 	 	 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_5,1);
+	  	 	 	 	  }
+	  	 	 	 	  else{
+	  	 	 	 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_5,0);
+	  	 	 	 	  }
+	  	 	if(readValue>407*2){
+	  	 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_6,1);
+	  	 		 	  }
+	  	 		 	  else{
+	  	 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_6,0);
+	  	 		 	  }
+	  	 	if(readValue>470*3){
+	  	 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_8,1);
+	  	 		 	  }
+	  	 		 	  else{
+	  	 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_8,0);
+	  	 		 	  }
+	  	 	if(readValue>470*4){
+	  	 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_9,1);
+	  	 		 	  }
+	  	 		 	  else{
+	  	 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_9,0);
+	  	 		 	  }
+	  	 	if(readValue>470*5){
+	  	 		 		HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_10,1);
+	  	 				}
+	  	 		 		else{
+	  	 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_10,0);
+	  	 		 		}
 
-	 	 if(readValue>470){
-	 	 	 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_5,1);
-	 	 	 	  }
-	 	 	 	  else{
-	 	 	 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_5,0);
-	 	 	 	  }
+	  	 	if(readValue>470*6){
+	  	 		 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_11,1);
+	  	 		 		 	  }
+	  	 		 		 	  else{
+	  	 		 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_11,0);
+	  	 		 		 	  }
+	  	 	if(readValue>470*7){
+	  	 		 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_12,1);
+	  	 		 		 	  }
+	  	 		 		 	  else{
+	  	 		 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_12,0);
+	  	 		 		 	  }
+	  	 	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,readValue/3.5);
+	  	 	HAL_Delay(0.1);
 
-	 	if(readValue>407*2){
-	 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_6,1);
-	 		 	  }
-	 		 	  else{
-	 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_6,0);
-	 		 	  }
-
-
-	 	if(readValue>470*3){
-	 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_8,1);
-	 		 	  }
-	 		 	  else{
-	 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_8,0);
-	 		 	  }
-
-	 	if(readValue>470*4){
-	 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_9,1);
-	 		 	  }
-	 		 	  else{
-	 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_9,0);
-	 		 	  }
-	 	if(readValue>470*5){
-	 		 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_10,1);
-	 		 		 	  }
-	 		 		 	  else{
-	 		 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_10,0);
-	 		 		 	  }
-
-	 	if(readValue>470*6){
-	 		 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_11,1);
-	 		 		 	  }
-	 		 		 	  else{
-	 		 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_11,0);
-	 		 		 	  }
-	 	if(readValue>470*7){
-	 		 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_12,1);
-	 		 		 	  }
-	 		 		 	  else{
-	 		 		 		 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_12,0);
-	 		 		 	  }
-
-	 	 // dis=17569.7*(pow(senADC,-1.2062));
-	 	  /*
-	 	  HAL_Delay(50);
-
-	 	  HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_8|GPIO_PIN_9
-                          |GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12, 1);
-	 	 HAL_Delay(150);
-	 	 HAL_GPIO_WritePin(GPIOA,  GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_8|GPIO_PIN_9
-	 	                           |GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12, 0);
-	 	*/
-	 	HAL_Delay(150);
-
+	  	 	//HAL_Delay(150);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -286,6 +279,55 @@ static void MX_ADC1_Init(void)
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
+
+}
+
+/**
+  * @brief TIM2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 127;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 625;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
+  HAL_TIM_MspPostInit(&htim2);
 
 }
 
