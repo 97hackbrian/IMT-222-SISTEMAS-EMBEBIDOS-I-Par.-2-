@@ -1,4 +1,4 @@
-/* USER CODE BEGIN Header */
+	/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file           : main.c
@@ -91,17 +91,15 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+ while (1)
+ {
     /* USER CODE END WHILE */
-	  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_4
-	  	                |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, 1);
-	  	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_15,1);
-	  	  	  HAL_Delay(50);
-	  	  	  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_4
-	  	                |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, 0);
-	  	  	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_15,0);
-	  	  	  HAL_Delay(50);
+	  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, 1);
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_15,1);
+	  HAL_Delay(50);
+	  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, 0);
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_15,0);
+	  HAL_Delay(50);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
