@@ -20,6 +20,7 @@
 #include "main.h"
 #include "liquidcrystal_i2c.h"
 #include <string.h>
+#include <stdio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -33,6 +34,107 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+char read_keypad (void)
+	{
+		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_3,0);  //Pull the R1 low
+		HAL_GPIO_WritePin (GPIOB, GPIO_PIN_1, 1);  // Pull the R2 High
+		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_11, 1);  // Pull the R3 High
+		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_8, 1);  // Pull the R4 High
+
+	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_4)))   // if the Col 1 is low
+		{
+	return '1';
+		}
+	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5)))   // if the Col 1 is low
+		{
+	return '2';
+		}
+
+	if (!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0)))   // if the Col 1 is low
+		{
+	return '3';
+		}
+
+	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_12)))   // if the Col 1 is low
+		{
+	return 'A';
+		}
+
+
+		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_3,1);  //Pull the R1 high
+		HAL_GPIO_WritePin (GPIOB, GPIO_PIN_1, 0);  // Pull the R2 LOW
+		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_11, 1);  // Pull the R3 High
+		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_8, 1);  // Pull the R4 High
+
+	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_4)))   // if the Col 1 is low
+		{
+	return '4';
+		}
+	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5)))   // if the Col 1 is low
+		{
+	return '5';
+		}
+
+	if (!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0)))   // if the Col 1 is low
+		{
+	return '6';
+		}
+
+	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_12)))   // if the Col 1 is low
+		{
+	return 'B';
+		}
+
+
+		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_3,1);  //Pull the R1 HIGH
+		HAL_GPIO_WritePin (GPIOB, GPIO_PIN_1, 1);  // Pull the R2 High
+		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_11, 0);  // Pull the R3 LOW
+		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_8, 1);  // Pull the R4 High
+
+	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_4)))   // if the Col 1 is low
+		{
+	return '7';
+		}
+	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5)))   // if the Col 1 is low
+		{
+	return '8';
+		}
+
+	if (!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0)))   // if the Col 1 is low
+		{
+	return '9';
+		}
+
+	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_12)))   // if the Col 1 is low
+		{
+	return 'C';
+		}
+
+
+		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_3,1);  //Pull the R1 HIGH
+		HAL_GPIO_WritePin (GPIOB, GPIO_PIN_1, 1);  // Pull the R2 High
+		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_11, 1);  // Pull the R3 High
+		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_8, 0);  // Pull the R4 LOW
+
+	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_4)))   // if the Col 1 is low
+		{
+	return '*';
+		}
+	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5)))   // if the Col 1 is low
+		{
+	return '0';
+		}
+
+	if (!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0)))   // if the Col 1 is low
+		{
+	return '#';
+		}
+
+	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_12)))   // if the Col 1 is low
+		{
+	return 'D';
+		}
+	}
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -97,12 +199,109 @@ int main(void)
   HD44780_Init(2);
   HD44780_Clear();
   HD44780_SetCursor(0,0);
-  HD44780_PrintStr("HELLO");
+  HD44780_PrintStr("INICIANDO...");
+  HAL_Delay(5000);
   HD44780_SetCursor(10,1);
-  HD44780_PrintStr("WORLD");
+  HD44780_PrintStr("MAQUINA DISPENSADORA");
   HAL_Delay(2000);
-
   HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+
+  HD44780_Clear();
+  HD44780_SetCursor(0,0);
+  HD44780_PrintStr("Ingrese las monedas");
+  HAL_Delay(1000);
+  int aux=0;
+  float monedasT=0;
+  while(aux==0){
+	  if(read_keypad()=='A'){
+		  HD44780_SetCursor(10,1);
+		  HD44780_PrintStr("0.5Bs");
+		  monedasT=monedasT+0.5;
+		  HAL_Delay(500);
+	  }
+	  if(read_keypad ()=='B'){
+		  HD44780_SetCursor(10,1);
+		  HD44780_PrintStr("1Bs");
+		  monedasT=monedasT+1;
+		  HAL_Delay(500);
+	  }
+	  if(read_keypad ()=='C'){
+		  HD44780_SetCursor(10,1);
+		  HD44780_PrintStr("2Bs");
+		  monedasT=monedasT+2;
+		  HAL_Delay(500);
+	  }
+	  if(read_keypad ()=='D'){
+		  HD44780_SetCursor(10,1);
+		  HD44780_PrintStr("5Bs");
+		  monedasT=monedasT+5;
+		  HAL_Delay(500);
+	  }
+	  if(read_keypad ()=='*'){
+		  HD44780_Clear();
+		  HD44780_SetCursor(0,0);
+		  char buf[100];
+		  gcvt(monedasT, 6, buf);
+		  HD44780_PrintStr(buf);
+		  HAL_Delay(6000);
+
+		  HD44780_Clear();
+		  HD44780_SetCursor(0,0);
+		  HD44780_PrintStr("seleccione el producto");
+		  HAL_Delay(500);
+		  aux=1;
+	  }
+  }
+  int aux2=0;
+  while(aux2==0){
+	  if(read_keypad ()=='1'){
+	  		  HD44780_SetCursor(10,1);
+	  		  HD44780_PrintStr("Producto 1");
+	  		  HAL_Delay(500);
+	  }
+	  if(read_keypad ()=='2'){
+	  		  HD44780_SetCursor(10,1);
+	  		  HD44780_PrintStr("Producto 2");
+	  		  HAL_Delay(500);
+	  }
+	  if(read_keypad ()=='3'){
+		  	  HD44780_SetCursor(10,1);
+		  	  HD44780_PrintStr("Producto 3");
+		  	  HAL_Delay(500);
+	  }
+	  if(read_keypad ()=='4'){
+	  	  	  HD44780_SetCursor(10,1);
+	  	  	  HD44780_PrintStr("Producto 4");
+	  	  	  HAL_Delay(500);
+	  }
+	  if(read_keypad ()=='5'){
+		  	  HD44780_SetCursor(10,1);
+	  		  HD44780_PrintStr("Producto 5");
+	  		  HAL_Delay(500);
+	  }
+	  if(read_keypad ()=='6'){
+	  		  HD44780_SetCursor(10,1);
+	  		  HD44780_PrintStr("Producto 6");
+	  		  HAL_Delay(500);
+	  }
+	  if(read_keypad ()=='*'){
+		  	  HD44780_Clear();
+		  	  HD44780_SetCursor(0,0);
+		  	  HD44780_PrintStr("dropeando el producto....");
+		  	  HAL_Delay(500);
+		  	  aux2=1;
+	  }
+  }
+  int x;
+  for(x=50;x<600;x++){
+  		  __HAL_TIM_SET_COMPARE(&htim16,TIM_CHANNEL_1,x);
+  		  HAL_Delay(2);
+  }
+  HD44780_Clear();
+  HD44780_SetCursor(0,0);
+  HD44780_PrintStr("RECOJA SU PRODUCTO");
+  HAL_Delay(8000);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -110,6 +309,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+
 	  int x;
 	  for(x=50;x<600;x++){
 		  __HAL_TIM_SET_COMPARE(&htim16,TIM_CHANNEL_1,x);
@@ -124,7 +324,6 @@ int main(void)
 	  HD44780_Init(2);
 	  HD44780_Clear();
 	  HD44780_SetCursor(0,0);
-	  HD44780_PrintStr(tmp_string(1,read_keypad ()));///lee y muestra en pantalla (necesario seguir pulsando)
 
     /* USER CODE BEGIN 3 */
   }
@@ -333,109 +532,13 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-	char read_keypad (void)
-	{
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_3,0);  //Pull the R1 low
-		HAL_GPIO_WritePin (GPIOB, GPIO_PIN_1, 1);  // Pull the R2 High
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_11, 1);  // Pull the R3 High
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_8, 1);  // Pull the R4 High
-
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_4)))   // if the Col 1 is low
-		{
-	return '1';
-		}
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5)))   // if the Col 1 is low
-		{
-	return '2';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0)))   // if the Col 1 is low
-		{
-	return '3';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_12)))   // if the Col 1 is low
-		{
-	return 'A';
-		}
 
 
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_3,1);  //Pull the R1 high
-		HAL_GPIO_WritePin (GPIOB, GPIO_PIN_1, 0);  // Pull the R2 LOW
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_11, 1);  // Pull the R3 High
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_8, 1);  // Pull the R4 High
 
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_4)))   // if the Col 1 is low
-		{
-	return '4';
-		}
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5)))   // if the Col 1 is low
-		{
-	return '5';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0)))   // if the Col 1 is low
-		{
-	return '6';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_12)))   // if the Col 1 is low
-		{
-	return 'B';
-		}
-
-
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_3,1);  //Pull the R1 HIGH
-		HAL_GPIO_WritePin (GPIOB, GPIO_PIN_1, 1);  // Pull the R2 High
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_11, 0);  // Pull the R3 LOW
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_8, 1);  // Pull the R4 High
-
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_4)))   // if the Col 1 is low
-		{
-	return '7';
-		}
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5)))   // if the Col 1 is low
-		{
-	return '8';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0)))   // if the Col 1 is low
-		{
-	return '9';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_12)))   // if the Col 1 is low
-		{
-	return 'C';
-		}
-
-
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_3,1);  //Pull the R1 HIGH
-		HAL_GPIO_WritePin (GPIOB, GPIO_PIN_1, 1);  // Pull the R2 High
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_11, 1);  // Pull the R3 High
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_8, 0);  // Pull the R4 LOW
-
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_4)))   // if the Col 1 is low
-		{
-	return '*';
-		}
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5)))   // if the Col 1 is low
-		{
-	return '0';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0)))   // if the Col 1 is low
-		{
-	return '#';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_12)))   // if the Col 1 is low
-		{
-	return 'D';
-		}
-
-
+	char enteroACaracter(int numero){
+	    return numero + '0';
 	}
+
 /* USER CODE END 4 */
 
 /**
