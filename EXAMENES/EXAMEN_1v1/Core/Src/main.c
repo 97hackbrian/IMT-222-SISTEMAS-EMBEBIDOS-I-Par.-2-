@@ -22,6 +22,7 @@
 #include <string.h>
 #include <stdio.h>
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -34,107 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-char read_keypad (void)
-	{
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_3,0);  //Pull the R1 low
-		HAL_GPIO_WritePin (GPIOB, GPIO_PIN_1, 1);  // Pull the R2 High
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_11, 1);  // Pull the R3 High
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_8, 1);  // Pull the R4 High
 
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_4)))   // if the Col 1 is low
-		{
-	return '1';
-		}
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5)))   // if the Col 1 is low
-		{
-	return '2';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0)))   // if the Col 1 is low
-		{
-	return '3';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_12)))   // if the Col 1 is low
-		{
-	return 'A';
-		}
-
-
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_3,1);  //Pull the R1 high
-		HAL_GPIO_WritePin (GPIOB, GPIO_PIN_1, 0);  // Pull the R2 LOW
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_11, 1);  // Pull the R3 High
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_8, 1);  // Pull the R4 High
-
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_4)))   // if the Col 1 is low
-		{
-	return '4';
-		}
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5)))   // if the Col 1 is low
-		{
-	return '5';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0)))   // if the Col 1 is low
-		{
-	return '6';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_12)))   // if the Col 1 is low
-		{
-	return 'B';
-		}
-
-
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_3,1);  //Pull the R1 HIGH
-		HAL_GPIO_WritePin (GPIOB, GPIO_PIN_1, 1);  // Pull the R2 High
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_11, 0);  // Pull the R3 LOW
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_8, 1);  // Pull the R4 High
-
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_4)))   // if the Col 1 is low
-		{
-	return '7';
-		}
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5)))   // if the Col 1 is low
-		{
-	return '8';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0)))   // if the Col 1 is low
-		{
-	return '9';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_12)))   // if the Col 1 is low
-		{
-	return 'C';
-		}
-
-
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_3,1);  //Pull the R1 HIGH
-		HAL_GPIO_WritePin (GPIOB, GPIO_PIN_1, 1);  // Pull the R2 High
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_11, 1);  // Pull the R3 High
-		HAL_GPIO_WritePin (GPIOA, GPIO_PIN_8, 0);  // Pull the R4 LOW
-
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_4)))   // if the Col 1 is low
-		{
-	return '*';
-		}
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5)))   // if the Col 1 is low
-		{
-	return '0';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0)))   // if the Col 1 is low
-		{
-	return '#';
-		}
-
-	if (!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_12)))   // if the Col 1 is low
-		{
-	return 'D';
-		}
-	}
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -143,6 +44,9 @@ char read_keypad (void)
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+DMA_HandleTypeDef hdma_adc1;
+
 I2C_HandleTypeDef hi2c1;
 
 TIM_HandleTypeDef htim16;
@@ -154,8 +58,10 @@ TIM_HandleTypeDef htim16;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_TIM16_Init(void);
+static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -193,8 +99,12 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_I2C1_Init();
   MX_TIM16_Init();
+  MX_ADC1_Init();
+
+  HAL_ADC_Start(&hadc1);
   /* USER CODE BEGIN 2 */
   HD44780_Init(2);
   HD44780_Clear();
@@ -213,31 +123,25 @@ int main(void)
   int aux=0;
   float monedasT=0;
   while(aux==0){
-	  if(read_keypad()=='A'){
-		  HD44780_SetCursor(10,1);
-		  HD44780_PrintStr("0.5Bs");
-		  monedasT=monedasT+0.5;
-		  HAL_Delay(500);
-	  }
-	  if(read_keypad ()=='B'){
+	  if((HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5))){
 		  HD44780_SetCursor(10,1);
 		  HD44780_PrintStr("1Bs");
 		  monedasT=monedasT+1;
 		  HAL_Delay(500);
 	  }
-	  if(read_keypad ()=='C'){
+	  if((HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_7))){
 		  HD44780_SetCursor(10,1);
 		  HD44780_PrintStr("2Bs");
 		  monedasT=monedasT+2;
 		  HAL_Delay(500);
 	  }
-	  if(read_keypad ()=='D'){
+	  if((HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0))){
 		  HD44780_SetCursor(10,1);
 		  HD44780_PrintStr("5Bs");
 		  monedasT=monedasT+5;
 		  HAL_Delay(500);
 	  }
-	  if(read_keypad ()=='*'){
+	  if((HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_1))){
 		  HD44780_Clear();
 		  HD44780_SetCursor(0,0);
 		  char buf[100];
@@ -254,37 +158,37 @@ int main(void)
   }
   int aux2=0;
   while(aux2==0){
-	  if(read_keypad ()=='1'){
+	  if(HAL_ADC_GetValue(&hadc1)>0 && HAL_ADC_GetValue(&hadc1)<500){
 	  		  HD44780_SetCursor(10,1);
 	  		  HD44780_PrintStr("Producto 1");
 	  		  HAL_Delay(500);
 	  }
-	  if(read_keypad ()=='2'){
+	  if(HAL_ADC_GetValue(&hadc1)>500 && HAL_ADC_GetValue(&hadc1)<1000){
 	  		  HD44780_SetCursor(10,1);
 	  		  HD44780_PrintStr("Producto 2");
 	  		  HAL_Delay(500);
 	  }
-	  if(read_keypad ()=='3'){
+	  if(HAL_ADC_GetValue(&hadc1)>1000 && HAL_ADC_GetValue(&hadc1)<1500){
 		  	  HD44780_SetCursor(10,1);
 		  	  HD44780_PrintStr("Producto 3");
 		  	  HAL_Delay(500);
 	  }
-	  if(read_keypad ()=='4'){
+	  if(HAL_ADC_GetValue(&hadc1)>1500 && HAL_ADC_GetValue(&hadc1)<2000){
 	  	  	  HD44780_SetCursor(10,1);
 	  	  	  HD44780_PrintStr("Producto 4");
 	  	  	  HAL_Delay(500);
 	  }
-	  if(read_keypad ()=='5'){
+	  if(HAL_ADC_GetValue(&hadc1)>2000 && HAL_ADC_GetValue(&hadc1)<2500){
 		  	  HD44780_SetCursor(10,1);
 	  		  HD44780_PrintStr("Producto 5");
 	  		  HAL_Delay(500);
 	  }
-	  if(read_keypad ()=='6'){
+	  if(HAL_ADC_GetValue(&hadc1)>2500 && HAL_ADC_GetValue(&hadc1)<3000){
 	  		  HD44780_SetCursor(10,1);
 	  		  HD44780_PrintStr("Producto 6");
 	  		  HAL_Delay(500);
 	  }
-	  if(read_keypad ()=='*'){
+	  if((HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_1))){
 		  	  HD44780_Clear();
 		  	  HD44780_SetCursor(0,0);
 		  	  HD44780_PrintStr("dropeando el producto....");
@@ -309,21 +213,6 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
-	  int x;
-	  for(x=50;x<600;x++){
-		  __HAL_TIM_SET_COMPARE(&htim16,TIM_CHANNEL_1,x);
-		  HAL_Delay(1);
-	  }
-
-	  for(x=600;x>50;x=x-1){
-		  __HAL_TIM_SET_COMPARE(&htim16,TIM_CHANNEL_1,x);
-		  HAL_Delay(1);
-	  }
-
-	  HD44780_Init(2);
-	  HD44780_Clear();
-	  HD44780_SetCursor(0,0);
 
     /* USER CODE BEGIN 3 */
   }
@@ -351,7 +240,7 @@ void SystemClock_Config(void)
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
   RCC_OscInitStruct.MSIState = RCC_MSI_ON;
-  RCC_OscInitStruct.MSICalibrationValue = 16;
+  RCC_OscInitStruct.MSICalibrationValue = 0;
   RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -372,6 +261,64 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief ADC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC1_Init(void)
+{
+
+  /* USER CODE BEGIN ADC1_Init 0 */
+
+  /* USER CODE END ADC1_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+
+  /** Common config
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
+  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc1.Init.LowPowerAutoWait = DISABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.DMAContinuousRequests = DISABLE;
+  hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+  hadc1.Init.OversamplingMode = DISABLE;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_8;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+
 }
 
 /**
@@ -485,6 +432,22 @@ static void MX_TIM16_Init(void)
 }
 
 /**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -497,36 +460,16 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3|GPIO_PIN_8|GPIO_PIN_11, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
-
-  /*Configure GPIO pins : PA3 PA8 PA11 */
-  GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_8|GPIO_PIN_11;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  /*Configure GPIO pins : PA5 PA7 */
+  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA4 PA5 PA12 */
-  GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_12;
+  /*Configure GPIO pins : PB0 PB1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PB0 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PB1 */
-  GPIO_InitStruct.Pin = GPIO_PIN_1;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
