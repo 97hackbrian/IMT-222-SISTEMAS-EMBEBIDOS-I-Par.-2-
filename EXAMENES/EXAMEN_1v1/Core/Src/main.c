@@ -46,6 +46,7 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
+unsigned readValue;
 
 I2C_HandleTypeDef hi2c1;
 
@@ -104,107 +105,10 @@ int main(void)
   MX_TIM16_Init();
   MX_ADC1_Init();
 
-  HAL_ADC_Start(&hadc1);
+
   /* USER CODE BEGIN 2 */
   HD44780_Init(2);
-  HD44780_Clear();
-  HD44780_SetCursor(0,0);
-  HD44780_PrintStr("INICIANDO...");
-  HAL_Delay(5000);
-  HD44780_SetCursor(10,1);
-  HD44780_PrintStr("MAQUINA DISPENSADORA");
-  HAL_Delay(2000);
-  HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
 
-  HD44780_Clear();
-  HD44780_SetCursor(0,0);
-  HD44780_PrintStr("Ingrese las monedas");
-  HAL_Delay(1000);
-  int aux=0;
-  float monedasT=0;
-  while(aux==0){
-	  if((HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5))){
-		  HD44780_SetCursor(10,1);
-		  HD44780_PrintStr("1Bs");
-		  monedasT=monedasT+1;
-		  HAL_Delay(500);
-	  }
-	  if((HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_7))){
-		  HD44780_SetCursor(10,1);
-		  HD44780_PrintStr("2Bs");
-		  monedasT=monedasT+2;
-		  HAL_Delay(500);
-	  }
-	  if((HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0))){
-		  HD44780_SetCursor(10,1);
-		  HD44780_PrintStr("5Bs");
-		  monedasT=monedasT+5;
-		  HAL_Delay(500);
-	  }
-	  if((HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_1))){
-		  HD44780_Clear();
-		  HD44780_SetCursor(0,0);
-		  char buf[100];
-		  gcvt(monedasT, 6, buf);
-		  HD44780_PrintStr(buf);
-		  HAL_Delay(6000);
-
-		  HD44780_Clear();
-		  HD44780_SetCursor(0,0);
-		  HD44780_PrintStr("seleccione el producto");
-		  HAL_Delay(500);
-		  aux=1;
-	  }
-  }
-  int aux2=0;
-  while(aux2==0){
-	  if(HAL_ADC_GetValue(&hadc1)>0 && HAL_ADC_GetValue(&hadc1)<500){
-	  		  HD44780_SetCursor(10,1);
-	  		  HD44780_PrintStr("Producto 1");
-	  		  HAL_Delay(500);
-	  }
-	  if(HAL_ADC_GetValue(&hadc1)>500 && HAL_ADC_GetValue(&hadc1)<1000){
-	  		  HD44780_SetCursor(10,1);
-	  		  HD44780_PrintStr("Producto 2");
-	  		  HAL_Delay(500);
-	  }
-	  if(HAL_ADC_GetValue(&hadc1)>1000 && HAL_ADC_GetValue(&hadc1)<1500){
-		  	  HD44780_SetCursor(10,1);
-		  	  HD44780_PrintStr("Producto 3");
-		  	  HAL_Delay(500);
-	  }
-	  if(HAL_ADC_GetValue(&hadc1)>1500 && HAL_ADC_GetValue(&hadc1)<2000){
-	  	  	  HD44780_SetCursor(10,1);
-	  	  	  HD44780_PrintStr("Producto 4");
-	  	  	  HAL_Delay(500);
-	  }
-	  if(HAL_ADC_GetValue(&hadc1)>2000 && HAL_ADC_GetValue(&hadc1)<2500){
-		  	  HD44780_SetCursor(10,1);
-	  		  HD44780_PrintStr("Producto 5");
-	  		  HAL_Delay(500);
-	  }
-	  if(HAL_ADC_GetValue(&hadc1)>2500 && HAL_ADC_GetValue(&hadc1)<3000){
-	  		  HD44780_SetCursor(10,1);
-	  		  HD44780_PrintStr("Producto 6");
-	  		  HAL_Delay(500);
-	  }
-	  if((HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_1))){
-		  	  HD44780_Clear();
-		  	  HD44780_SetCursor(0,0);
-		  	  HD44780_PrintStr("dropeando el producto....");
-		  	  HAL_Delay(500);
-		  	  aux2=1;
-	  }
-  }
-  int x;
-  for(x=50;x<600;x++){
-  		  __HAL_TIM_SET_COMPARE(&htim16,TIM_CHANNEL_1,x);
-  		  HAL_Delay(2);
-  }
-  HD44780_Clear();
-  HD44780_SetCursor(0,0);
-  HD44780_PrintStr("RECOJA SU PRODUCTO");
-  HAL_Delay(8000);
 
   /* USER CODE END 2 */
 
@@ -213,7 +117,239 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+	  HD44780_Clear();
+	   HD44780_SetCursor(0,0);
+	   HD44780_PrintStr("INICIANDO...");
+	   HAL_Delay(5000);
+	   HD44780_SetCursor(0,1);
+	   HD44780_PrintStr("MAQUINA DISPENSADORA");
+	   HAL_Delay(2000);
+	   HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
 
+	   HD44780_Clear();
+	   HD44780_SetCursor(0,0);
+	   HD44780_PrintStr("Ingrese monedas: ");
+	   HAL_Delay(1000);
+	   int aux=0;
+	   float monedasT=0;
+	   while(aux==0){
+		   if(!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_6))){
+		   	 		  HD44780_SetCursor(12,1);
+		   	 		  HD44780_PrintStr("0.10Bs");
+		   	 		  monedasT=monedasT+1;
+		   	 		  HAL_Delay(500);
+		   	 	  }
+		   if(!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_2))){
+		   	 		  HD44780_SetCursor(12,1);
+		   	 		  HD44780_PrintStr("0.20Bs");
+		   	 		  monedasT=monedasT+1;
+		   	 		  HAL_Delay(500);
+		   	 	  }
+		   if(!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5))){
+		   	 		  HD44780_SetCursor(12,1);
+		   	 		  HD44780_PrintStr("0.5Bs");
+		   	 		  monedasT=monedasT+1;
+		   	 		  HAL_Delay(500);
+		   	 	  }
+	 	  if(!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_8))){
+	 		  HD44780_SetCursor(12,1);
+	 		  HD44780_PrintStr("1Bs");
+	 		  monedasT=monedasT+1;
+	 		  HAL_Delay(500);
+	 	  }
+	 	  if(!(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_7))){
+	 		  HD44780_SetCursor(12,1);
+	 		  HD44780_PrintStr("2Bs");
+	 		  monedasT=monedasT+2;
+	 		  HAL_Delay(500);
+	 	  }
+	 	  if(!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_0))){
+	 		  HD44780_SetCursor(12,1);
+	 		  HD44780_PrintStr("5Bs");
+	 		  monedasT=monedasT+5;
+	 		  HAL_Delay(500);
+	 	  }
+	 	 HD44780_SetCursor(0,1);
+	 	 HD44780_PrintStr("TOTAL:");
+	 	HD44780_SetCursor(6,1);
+	 	char buf[100];
+	 	 gcvt(monedasT, 6, buf);
+	 	HD44780_PrintStr(buf);
+	 		 		  HD44780_SetCursor(9,1);
+	 		 		  HD44780_PrintStr("Bs");
+	 	  if(!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_1))){
+	 		  HD44780_Clear();
+	 		  HD44780_SetCursor(0,0);
+	 		  HD44780_PrintStr("SALDO:");
+	 		  HD44780_SetCursor(7,0);
+	 		  char buf[100];
+	 		  gcvt(monedasT, 6, buf);
+	 		  HD44780_PrintStr(buf);
+	 		  HD44780_SetCursor(9,0);
+	 		  HD44780_PrintStr("Bs.");
+	 		  HAL_Delay(3000);
+
+
+	 		  HD44780_Clear();
+	 		  HD44780_SetCursor(0,0);
+	 		  HD44780_PrintStr("seleccione producto");
+	 		  HAL_Delay(2000);
+	 		  aux=1;
+	 	  }
+	   }
+	   int aux2=0;
+	   HD44780_Clear();
+		  HD44780_SetCursor(0,0);
+		  HD44780_PrintStr("MOVER PERILLA");
+		  HAL_Delay(2000);
+	   while(aux2==0){
+	 	  HAL_ADC_Start(&hadc1);
+	 	  readValue=HAL_ADC_GetValue(&hadc1);
+
+	 	  if(HAL_ADC_GetValue(&hadc1)>0 && HAL_ADC_GetValue(&hadc1)<500){
+	 	  		  HD44780_SetCursor(0,0);
+	 	  		HD44780_Clear();
+	 	  		  HD44780_PrintStr("Producto 1: 1Bs");
+
+	 	  		if((monedasT-1)>=0){
+	 	  			HD44780_SetCursor(0,1);
+	 	  			  	 HD44780_PrintStr("vuelto ");
+	 	  			  	HD44780_SetCursor(7,1);
+	 	  			  char buf[100];
+	 	  			  		  gcvt(monedasT-1, 6, buf);
+	 	  			  		  			  	 HD44780_PrintStr(buf);
+	 	  			  		  			HD44780_SetCursor(11,1);
+	 	  			  		  			  	 HD44780_PrintStr("Bs");
+	 	  		}
+	 	  		else if((monedasT-1)<0){
+	 	  			HD44780_SetCursor(0,1);
+	  			  	 HD44780_PrintStr("saldo insuficiente");
+
+	  		}
+	 	  		  HAL_Delay(300);
+	 	  }
+	 	  if(HAL_ADC_GetValue(&hadc1)>500 && HAL_ADC_GetValue(&hadc1)<1000){
+	 	  		  HD44780_SetCursor(0,0);
+	 	  		HD44780_Clear();
+	 	  		  HD44780_PrintStr("Producto 2: 4Bs");
+	 	  		if((monedasT-4)>=0){
+	 	  			  			HD44780_SetCursor(0,1);
+	 	  			  			  	 HD44780_PrintStr("vuelto ");
+	 	  			  			  	HD44780_SetCursor(7,1);
+	 	  			  			  char buf[100];
+	 	  			  			  		  gcvt(monedasT-4, 6, buf);
+	 	  			  			  		  			  	 HD44780_PrintStr(buf);
+	 	  			  			  		  		HD44780_SetCursor(11,1);
+	 	  			  			  	HD44780_PrintStr("Bs");
+	 	  			  		}
+	 	  			  		else if((monedasT-4)<0){
+	 	  			  			HD44780_SetCursor(0,1);
+	 	  		 			  	 HD44780_PrintStr("saldo insuficiente");
+
+	 	  		 		}
+	 	  		  HAL_Delay(300);
+	 	  }
+	 	  if(HAL_ADC_GetValue(&hadc1)>1000 && HAL_ADC_GetValue(&hadc1)<1500){
+	 		  	  HD44780_SetCursor(0,0);
+	 		  	HD44780_Clear();
+	 		  	  HD44780_PrintStr("Producto 3: 6Bs");
+	 		  	if((monedasT-6)>=0){
+	 		  		  			  			HD44780_SetCursor(0,1);
+	 		  		  			  			  	 HD44780_PrintStr("vuelto ");
+	 		  		  			  			  	HD44780_SetCursor(7,1);
+	 		  		  			  			  char buf[100];
+	 		  		  			  			  		  gcvt(monedasT-6, 6, buf);
+	 		  		  			  			  		  			  	 HD44780_PrintStr(buf);
+	 		  		  			  			  		  		HD44780_SetCursor(11,1);
+	 		  		  			  	HD44780_PrintStr("Bs");
+	 		  		  			  		}
+	 		  		  			  		else if((monedasT-6)<0){
+	 		  		  			  			HD44780_SetCursor(0,1);
+	 		  		  		 			  	 HD44780_PrintStr("saldo insuficiente");
+
+	 		  		  		 		}
+	 		  	  HAL_Delay(300);
+	 	  }
+	 	  if(HAL_ADC_GetValue(&hadc1)>1500 && HAL_ADC_GetValue(&hadc1)<2000){
+	 	  	  	  HD44780_SetCursor(0,0);
+	 	  	  	HD44780_Clear();
+	 	  	  	  HD44780_PrintStr("Producto 4: 2Bs");
+	 	  	  	if((monedasT-2)>=0){
+	 	  	  		  			  			HD44780_SetCursor(0,1);
+	 	  	  		  			  			  	 HD44780_PrintStr("vuelto ");
+	 	  	  		  			  			  	HD44780_SetCursor(7,1);
+	 	  	  		  			  			  char buf[100];
+	 	  	  		  			  			  		  gcvt(monedasT-2, 6, buf);
+	 	  	  		  			  			  		  			  	 HD44780_PrintStr(buf);
+	 	  	  		  			  			  		  	HD44780_SetCursor(11,1);
+	 	  	  		  			  			  		  	HD44780_PrintStr("Bs");
+	 	  	  		  			  		}
+	 	  	  		  			  		else if((monedasT-2)<0){
+	 	  	  		  			  			HD44780_SetCursor(0,1);
+	 	  	  		  		 			  	 HD44780_PrintStr("saldo insuficiente");
+
+	 	  	  		  		 		}
+	 	  	  	  HAL_Delay(300);
+	 	  }
+	 	  if(HAL_ADC_GetValue(&hadc1)>2000 && HAL_ADC_GetValue(&hadc1)<2500){
+	 		  	  HD44780_SetCursor(0,0);
+	 		  	HD44780_Clear();
+	 		  	  HD44780_PrintStr("Producto 5: 5Bs");
+	 	  		if((monedasT-5)>=0){
+	 	  			  			  			HD44780_SetCursor(0,1);
+	 	  			  			  			  	 HD44780_PrintStr("vuelto ");
+	 	  			  			  			  	HD44780_SetCursor(7,1);
+	 	  			  			  			  char buf[100];
+	 	  			  			  			  		  gcvt(monedasT-5, 6, buf);
+	 	  			  			  			  		  			  	 HD44780_PrintStr(buf);
+	 	  			  			  			  		  		HD44780_SetCursor(11,1);
+	 	  			  			  			  		  	 HD44780_PrintStr("Bs");
+	 	  			  			  		}
+	 	  			  			  		else if((monedasT-5)<0){
+	 	  			  			  			HD44780_SetCursor(0,1);
+	 	  			  		 			  	 HD44780_PrintStr("saldo insuficiente");
+
+	 	  			  		 		}
+	 	  		  HAL_Delay(300);
+	 	  }
+	 	  if(HAL_ADC_GetValue(&hadc1)>2500 && HAL_ADC_GetValue(&hadc1)<3000){
+	 	  		  HD44780_SetCursor(0,0);
+	 	  		HD44780_Clear();
+	 	  		  HD44780_PrintStr("Producto 6: 10Bs");
+	 	  		if((monedasT-10)>=0){
+	 	  			  			  			HD44780_SetCursor(0,1);
+	 	  			  			  			  	 HD44780_PrintStr("vuelto ");
+	 	  			  			  			  	HD44780_SetCursor(7,1);
+	 	  			  			  			  char buf[100];
+	 	  			  			  			  		  gcvt(monedasT-10, 6, buf);
+	 	  			  			  			  		  			  	 HD44780_PrintStr(buf);
+	 	  			  			  			  		  		HD44780_SetCursor(11,1);
+	 	  			  			  			  		  		HD44780_PrintStr("Bs");
+	 	  			  			  		}
+	 	  			  			  		else if((monedasT-10)<0){
+	 	  			  			  			HD44780_SetCursor(0,1);
+	 	  			  		 			  	 HD44780_PrintStr("saldo insuficiente");
+
+	 	  			  		 		}
+	 	  		  HAL_Delay(300);
+	 	  }
+	 	  if(!(HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_1))){
+	 		  	  HD44780_Clear();
+	 		  	  HD44780_SetCursor(0,0);
+	 		  	  HD44780_PrintStr("dropeando el producto....");
+	 		  	  HAL_Delay(500);
+	 		  	  aux2=1;
+	 	  }
+	   }
+	   int x;
+	   for(x=50;x<600;x++){
+	   		  __HAL_TIM_SET_COMPARE(&htim16,TIM_CHANNEL_1,x);
+	   		  HAL_Delay(3);
+	   }
+	   HD44780_Clear();
+	   HD44780_SetCursor(0,0);
+	   HD44780_PrintStr("RECOJER PRODUCTO");
+	   HAL_Delay(3000);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -514,4 +650,4 @@ void assert_failed(uint8_t *file, uint32_t line)
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
-#endif /* USE_FULL_ASSERT */
+#endif /* USE_FULL_ASSERT */
