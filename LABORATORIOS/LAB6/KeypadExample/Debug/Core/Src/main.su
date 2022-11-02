@@ -1,0 +1,6 @@
+KEYPAD.c:27:6:KEYPAD_Scan	32	static
+main.c:69:6:SysTick_CallBack	8	static
+main.c:89:5:main	8	static
+main.c:163:6:SystemClock_Config	96	static
+main.c:206:13:MX_GPIO_Init	40	static
+main.c:246:6:Error_Handler	4	static,ignoring_inline_asm
