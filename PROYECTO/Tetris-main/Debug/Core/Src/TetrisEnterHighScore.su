@@ -1,0 +1,4 @@
+../Core/Src/TetrisEnterHighScore.c:30:13:BlinkInitialBeingSet	24	static
+../Core/Src/TetrisEnterHighScore.c:49:28:TetrisEnterHighScore_Update	24	static
+../Core/Src/TetrisEnterHighScore.c:103:6:TetrisEnterHighScore_OnEnter	16	static
+../Core/Src/TetrisEnterHighScore.c:125:6:TetrisEnterHighScore_OnExit	16	static
